@@ -2,6 +2,7 @@
     "appId": "com.lachlan-bruce.myapp",
     "files": ["dist-electron", "dist-react"],
     "icon": "src/ui/assets/logo.png",
+    "extraResources": ["dist-electron/preload.cjs"],
     "mac": {
         "target": "dmg"
     },
