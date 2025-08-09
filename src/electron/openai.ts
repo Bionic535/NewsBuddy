@@ -10,7 +10,6 @@ export async function ai_call() {
         input: "Write a one-sentence bedtime story about a unicorn.",
     });
     return {
-        response
+        output_text: response.output_text
     }
 }
-

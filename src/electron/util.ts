@@ -9,7 +9,7 @@ export function isDev(): boolean {
 
 export function ipcMainHandle<Key extends keyof EventPayloadMapping>(
     key: Key, 
-    handler: () => EventPayloadMapping[Key]
+    handler: () => Promise<EventPayloadMapping[Key]> | EventPayloadMapping[Key]
 ) {
     ipcMain.handle(key, (event) => {
         if (!event.senderFrame) {
