@@ -16,7 +16,7 @@ export async function ai_call(functype: string, link: string): Promise<{ output_
     apiKey: process.env.OPENAI_KEY,
     });
     const response = await client.responses.create({
-        model: "gpt-4.1",
+        model: "gpt-5",
         input: inputtext,
     });
     return {
