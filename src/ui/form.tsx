@@ -5,9 +5,15 @@ import { useState } from "react"
 function MyForm() {
   const [articleLink, setArticleLink] = useState("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Article Link Submitted:", articleLink);
+    const result = await window.electron.ai_call("S", articleLink);
+    if (result) {
+      console.log("AI Call Result:", result.output_text);
+    }
+    else {
+      console.error("AI Call failed or returned no result.");
+    }
   }
 
   return (
