@@ -17,18 +17,12 @@ export async function getMainTextFromHtml(html: string): Promise<string> {
     return mainText;
 }
 
-export async function ai_call(functype: string, link: string): Promise<{ output_text: string } | undefined> {
+export async function ai_call(link: string): Promise<{ output_text: string } | undefined> {
     const html = await fetch(link).then((res: Response) => res.text());
     console.log(html);
     const mainText = await getMainTextFromHtml(html);
-    let inputtext = "say error";
-    if (functype === "S") {
-        inputtext = "please summarize the following article: " + mainText;
-    }
-    else if (functype === "C") {
-        inputtext = "please fact check the following article: " + mainText;
-    }
-    console.log(functype)
+    const inputtext = "please summarize the following article: " + mainText;
+    
     console.log(link)
     const client = new OpenAI({
     apiKey: process.env.OPENAI_KEY,

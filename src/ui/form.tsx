@@ -7,11 +7,10 @@ function MyForm() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const result = await window.electron.ai_call("S", articleLink);
+    const result = await window.electron.ai_call(articleLink);
     if (result) {
       console.log("AI Call Result:", result.output_text);
-    }
-    else {
+    } else {
       console.error("AI Call failed or returned no result.");
     }
   }
@@ -21,7 +20,7 @@ function MyForm() {
       <div>
         <label>Enter the article link:
           <input
-            className = "border"
+            className="border"
             type="text"
             value={articleLink}
             onChange={(event) => setArticleLink(event.target.value)}
@@ -29,7 +28,7 @@ function MyForm() {
         </label>
       </div>
       <div>
-        <input className = "border" type="submit" value="Submit" />
+        <input className="border" type="submit" value="Submit" />
       </div>
     </form>
   )

@@ -9,14 +9,14 @@ export function isDev(): boolean {
 
 export function ipcMainHandle<Key extends keyof EventPayloadMapping>(
     key: Key, 
-    handler: (functype: string, link: string) => Promise<EventPayloadMapping[Key]> | EventPayloadMapping[Key]
+    handler: (link: string) => Promise<EventPayloadMapping[Key]> | EventPayloadMapping[Key]
 ) {
-    ipcMain.handle(key, (event, functype: string, link: string) => {
+    ipcMain.handle(key, (event, link: string) => {
         if (!event.senderFrame) {
             throw new Error("senderFrame is null");
         }
         validateEventFrame(event.senderFrame);
-        return handler(functype, link);
+        return handler(link);
     });
 }
 

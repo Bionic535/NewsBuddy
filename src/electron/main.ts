@@ -17,8 +17,8 @@ app.on("ready", () => {
     } else {
         mainWindow.loadFile(path.join(app.getAppPath() + "/dist-react/index.html"));
     }
-    ipcMainHandle('ai_call', async (functype: string, link: string) => {
-        return await apiCall(functype, link);
+    ipcMainHandle('ai_call', async (link: string) => {
+        return await apiCall(link);
     });
     mainWindow.on("closed", () => {
         app.quit();
@@ -26,9 +26,9 @@ app.on("ready", () => {
 
 });
 
-async function apiCall(functype: string, link: string): Promise<{ output_text: string } | undefined> {
+async function apiCall(link: string): Promise<{ output_text: string } | undefined> {
     try {
-        const response = await ai_call(functype, link);
+        const response = await ai_call(link);
         console.log("AI Call Response:", response);
         return response;
     } catch (error) {

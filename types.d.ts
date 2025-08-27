@@ -4,6 +4,6 @@ type EventPayloadMapping = {
 
 interface Window {
     electron: {
-        ai_call: (functype: string, link: string) => Promise<{ output_text: string; } | undefined>;
+        ai_call: (link: string) => Promise<{ output_text: string; } | undefined>;
     };
 }
