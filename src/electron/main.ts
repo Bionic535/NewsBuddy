@@ -1,14 +1,15 @@
-import {} from "electron";
 import { app, BrowserWindow } from "electron";  
 import * as path from "path";
 import { ipcMainHandle, isDev } from "./util.js";
 import { getPreloadPath } from "./pathResolver.js";
-import { ai_call } from "./openai.js";
+import { aiCall } from "./openai.js";
 
 app.on("ready", () => {
-    const mainWindow = new BrowserWindow({
+        const mainWindow = new BrowserWindow({
         webPreferences: {
-            preload: getPreloadPath()
+            preload: getPreloadPath(),
+            contextIsolation: true,
+            nodeIntegration: false,
         },
     });
     if (isDev()) {
@@ -17,8 +18,8 @@ app.on("ready", () => {
     } else {
         mainWindow.loadFile(path.join(app.getAppPath() + "/dist-react/index.html"));
     }
-    ipcMainHandle('ai_call', async (link: string) => {
-        return await apiCall(link);
+    ipcMainHandle('aiCall', async (link: string, calltype: string) => {
+        return await apiCall(link, calltype);
     });
     mainWindow.on("closed", () => {
         app.quit();
@@ -26,9 +27,9 @@ app.on("ready", () => {
 
 });
 
-async function apiCall(link: string): Promise<{ output_text: string } | undefined> {
+async function apiCall(link: string, calltype: string): Promise<{ output_text: string } | undefined> {
     try {
-        const response = await ai_call(link);
+        const response = await aiCall(link, calltype);
         console.log("AI Call Response:", response);
         return response;
     } catch (error) {

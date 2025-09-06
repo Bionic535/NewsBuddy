@@ -17,12 +17,17 @@ export async function getMainTextFromHtml(html: string): Promise<string> {
     return mainText;
 }
 
-export async function ai_call(link: string): Promise<{ output_text: string } | undefined> {
+export async function aiCall(link: string, calltype: string): Promise<{ output_text: string } | undefined> {
     const html = await fetch(link).then((res: Response) => res.text());
     console.log(html);
     const mainText = await getMainTextFromHtml(html);
-    const inputtext = "please summarize the following article: " + mainText;
-    
+    let inputtext = "";
+    if (calltype === "summarize") {
+        inputtext = "please summarize the following article: " + mainText + "return just the summary.";
+    } else if (calltype === "fact-check") {
+        inputtext = "please fact check this article:" + mainText + "if the article is too current, respond with your best guess on if it is fake from how it is written, if you are able to fact check it, correct any mistakes you find, and return the full corrected article.";
+    }
+
     console.log(link)
     const client = new OpenAI({
     apiKey: process.env.OPENAI_KEY,

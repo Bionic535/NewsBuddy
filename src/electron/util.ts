@@ -9,14 +9,14 @@ export function isDev(): boolean {
 
 export function ipcMainHandle<Key extends keyof EventPayloadMapping>(
     key: Key, 
-    handler: (link: string) => Promise<EventPayloadMapping[Key]> | EventPayloadMapping[Key]
+    handler: (...args: any[]) => Promise<EventPayloadMapping[Key]> | EventPayloadMapping[Key]
 ) {
-    ipcMain.handle(key, (event, link: string) => {
+    ipcMain.handle(key, (event, ...args) => {
         if (!event.senderFrame) {
             throw new Error("senderFrame is null");
         }
         validateEventFrame(event.senderFrame);
-        return handler(link);
+        return handler(...args);
     });
 }
 
@@ -30,10 +30,14 @@ export function ipcWebContentsSend<Key extends keyof EventPayloadMapping>(
 
 export function validateEventFrame(frame: WebFrameMain) {
     console.log(`Validating frame URL: ${frame.url}`);
-    if (isDev() && new URL(frame.url).hostname !== 'localhost:5125') {
-        return;
+    if (isDev()) {
+        if (new URL(frame.url).host === 'localhost:5123') {
+            return;
+        }
+    } else {
+        if (frame.url === pathToFileURL(getUiPath()).toString()) {
+            return;
+        }
     }
-    if (frame.url !== pathToFileURL(getUiPath()).toString()) {
-        throw new Error(`Invalid frame URL`);
-    }
+    throw new Error(`Invalid frame URL: ${frame.url}`);
 }

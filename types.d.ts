@@ -1,9 +1,9 @@
 type EventPayloadMapping = {
-    ai_call: { output_text: string; } | undefined;
+    aiCall: { output_text: string; } | Promise<{ output_text: string; } | undefined> | undefined;
 }
 
 interface Window {
-    electron: {
-        ai_call: (link: string) => Promise<{ output_text: string; } | undefined>;
+    electronAPI: {
+      aiCall: (link: string, calltype: string) => { output_text: string; } | Promise<{ output_text: string; } | undefined> | undefined;
     };
-}
+  }
