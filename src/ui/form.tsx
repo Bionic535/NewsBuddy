@@ -1,6 +1,7 @@
 import "./App.css"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { useAiCallResponse } from "./AiCallResponseContext";
 
 // Define the source type based on Electron's DesktopCapturerSource
 
@@ -8,10 +9,19 @@ import { useNavigate } from "react-router-dom";
 function MyForm() {
   const [articleLink, setArticleLink] = useState("");
   const navigate = useNavigate();
+  const { setResponse } = useAiCallResponse();
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     console.log("Submitted");
+    const result = await window.electronAPI.aiCall(articleLink, "summarize");
+    console.log(result);
+    if (result) {
+      setResponse(result.output_text);
+    }
+    else {
+      setResponse("Error: No response from AI");
+    }
     navigate("/summary");
   };
 

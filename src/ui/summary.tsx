@@ -1,10 +1,12 @@
 import "./App.css"
+import { useAiCallResponse } from "./AiCallResponseContext";
 
 function Summary() {
+  const { response } = useAiCallResponse();
   return (
     <>
       <h2 className="text-2xl font-bold">Summary</h2>
-      <p>This is where the summary of the article will be displayed.</p>
+      <p>{response}</p>
     </>
   )
 }
