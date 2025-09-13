@@ -1,20 +1,23 @@
 import "./App.css"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 
 // Define the source type based on Electron's DesktopCapturerSource
-interface Source {
-  id: string;
-  name: string;
-}
+
 
 function MyForm() {
   const [articleLink, setArticleLink] = useState("");
-  const [sources] = useState<Source[]>([]);
+  const navigate = useNavigate();
 
-  
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    console.log("Submitted");
+    navigate("/summary");
+  };
+
   return (
     <>
-      <form onSubmit={() => console.log("Submitted")}>
+      <form onSubmit={handleSubmit}>
         <div>
           <label>Enter the article link:
             <input
@@ -30,17 +33,7 @@ function MyForm() {
         </div>
       </form>
 
-      <div className="mt-4">
-        <button type="button" className="border p-2" onClick={() => console.log("Get Sources Clicked")}>
-          Get Available Capture Sources
-        </button>
-        <h3 className="mt-2">Available Sources:</h3>
-        <ul>
-          {sources.map(source => (
-            <li key={source.id}>{source.name}</li>
-          ))}
-        </ul>
-      </div>
+      
     </>
   )
 }

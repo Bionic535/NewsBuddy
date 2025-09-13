@@ -1,16 +1,18 @@
 import './App.css'
 import MyForm from './form'
+import Summary from './summary'
+import { BrowserRouter,Routes,Route } from 'react-router-dom';
 function App() {
 
   return (
     <>
       <h1 className="text-4xl font-bold">NewsBuddy</h1>
-      <div>
-        <MyForm />
-      </div>
-      <p>
-        Ctrl + S for summary | Ctrl + C to Check the Article
-      </p>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<MyForm />} />
+          <Route path="/summary" element={<Summary />} />
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
