@@ -8,13 +8,14 @@ import { useAiCallResponse } from "./AiCallResponseContext";
 
 function MyForm() {
   const [articleLink, setArticleLink] = useState("");
+  const [action, setAction] = useState("summarize");
   const navigate = useNavigate();
   const { setResponse } = useAiCallResponse();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     console.log("Submitted");
-    const result = await window.electronAPI.aiCall(articleLink, "summarize");
+    const result = await window.electronAPI.aiCall(articleLink, action);
     console.log(result);
     if (result) {
       setResponse(result.output_text);
@@ -22,14 +23,18 @@ function MyForm() {
     else {
       setResponse("Error: No response from AI");
     }
-    navigate("/summary");
+    if (action === "summarize") {
+      navigate("/summary");
+    } else if (action === "fact-check") {
+      navigate("/factcheck");
+    }
   };
 
   return (
     <>
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Enter the article link:
+          <label>Enter the article link:   
             <input
               className="border"
               type="text"
@@ -37,6 +42,19 @@ function MyForm() {
               onChange={(event) => setArticleLink(event.target.value)}
             />
           </label>
+        </div>
+        <div>
+          <label>Summarize or Fact-Check:   </label>
+          <select 
+            className="border"
+            id = "action"
+            name = "action"
+            value = {action}
+            onChange = {(event) => setAction(event.target.value)}
+          >
+            <option value="summarize">Summarize</option>
+            <option value="fact-check">Fact-Check</option>
+          </select>
         </div>
         <div>
           <input className="border" type="submit" value="Submit" />
