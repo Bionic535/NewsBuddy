@@ -1,4 +1,4 @@
-import { app, BrowserWindow, desktopCapturer, globalShortcut } from "electron";  
+import { app, BrowserWindow, desktopCapturer, globalShortcut, screen } from "electron";  
 import * as path from "path";
 import { ipcMainHandle, isDev } from "./util.js";
 import { getPreloadPath } from "./pathResolver.js";
@@ -72,7 +72,12 @@ app.on('activate', () => {
 
 async function takeChromeScreenshot() {
     try {
-        const sources = await desktopCapturer.getSources({ types: ['window'] });
+        const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+        const thumbnailSize = { width, height };
+        const sources = await desktopCapturer.getSources({ 
+            types: ['window'],
+            thumbnailSize 
+        });
         const chromeWindows = sources.filter(source => {
             const name = source.name.toLowerCase();
             return name.includes('chrome') ||
