@@ -2,7 +2,7 @@ import { app, BrowserWindow, desktopCapturer, globalShortcut, screen } from "ele
 import * as path from "path";
 import { ipcMainHandle, isDev } from "./util.js";
 import { getPreloadPath } from "./pathResolver.js";
-import { aiCall } from "./openai.js";
+import { aiCall, apiImageCall } from "./openai.js";
 import { kMaxLength } from "buffer";
 import { glob } from "fs";
 import * as fs from "fs";
@@ -26,6 +26,9 @@ app.on("ready", () => {
     ipcMainHandle('aiCall', async (link: string, calltype: string) => {
         return await apiCall(link, calltype);
     });
+    ipcMainHandle('apiImageCall', async (imageBase64: string) => {
+        return await apiImageCall(imageBase64);
+    });
     registerGlobalShortcuts();
     mainWindow.on("closed", () => {
         app.quit();
@@ -48,6 +51,7 @@ function registerGlobalShortcuts() {
         if (result && mainWindow) {
             mainWindow.show();
             mainWindow.focus();
+            aiImageCall(result.base64);
             mainWindow.webContents.send('screenshot-taken', result);
         }
     });
@@ -136,3 +140,13 @@ async function apiCall(link: string, calltype: string): Promise<{ output_text: s
     }
 }
 
+async function aiImageCall(imageBase64: string): Promise<{ output_text: string } | undefined> {
+    console.log("Received image for processing.");
+    try {
+        const response = await apiImageCall(imageBase64);
+        console.log("API Image Call Response:", response);
+        return response;
+    } catch (error) {
+        console.error("Error during API image call:", error);   
+    }
+}

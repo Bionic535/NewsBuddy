@@ -9,4 +9,5 @@ function ipcInvoke<Key extends keyof EventPayloadMapping>(
 
 contextBridge.exposeInMainWorld('electronAPI', {
   aiCall: (link: string, calltype: string) => ipcRenderer.invoke('aiCall', link, calltype)
+  , apiImageCall: (imageBase64: string) => ipcRenderer.invoke('apiImageCall', imageBase64)
 });

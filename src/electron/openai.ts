@@ -40,3 +40,10 @@ export async function aiCall(link: string, calltype: string): Promise<{ output_t
         output_text: response.output_text
     }
 }
+
+export async function apiImageCall(imageBase64: string): Promise<{ output_text: string } | undefined> {
+    console.log("inside apiImageCall");
+    return undefined;
+
+}
+
