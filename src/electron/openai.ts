@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import fetch from "node-fetch";
 import type { Response } from "node-fetch";
 import { load } from "cheerio";
+import fs from "fs";
 
 export async function getMainTextFromHtml(html: string): Promise<string> {
     const $ = load(html);
@@ -32,18 +33,55 @@ export async function aiCall(link: string, calltype: string): Promise<{ output_t
     const client = new OpenAI({
     apiKey: process.env.OPENAI_KEY,
     });
-    const response = await client.responses.create({
-        model: "gpt-5",
-        input: inputtext,
+    const response = await client.chat.completions.create({
+        model: "gpt-4",
+        messages: [{
+            role: "user",
+            content: inputtext,
+        }],
     });
-    return {
-        output_text: response.output_text
+
+    const content = response.choices[0].message.content;
+    if (content) {
+        return {
+            output_text: content
+        };
     }
+    return undefined;
 }
 
 export async function apiImageCall(imageBase64: string): Promise<{ output_text: string } | undefined> {
     console.log("inside apiImageCall");
-    return undefined;
+    const openai = new OpenAI({
+    apiKey: process.env.OPENAI_KEY,
+    });
 
+    const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+            {
+                role: "user",
+                content: [
+                    { type: "text", text: "give the link to the page" },
+                    {
+                        type: "image_url",
+                        image_url: {
+                            url: `data:image/jpeg;base64,${imageBase64}`
+                        },
+                    },
+                ],
+            },
+        ],
+        max_tokens: 300,
+    });
+
+    console.log(response.choices[0].message.content);
+    const content = response.choices[0].message.content;
+    if (content) {
+        return {
+            output_text: content
+        };
+    }
+    return undefined;
 }
 
