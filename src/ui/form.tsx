@@ -56,8 +56,12 @@ function MyForm() {
             <option value="fact-check">Fact-Check</option>
           </select>
         </div>
+        
         <div>
           <input className="border" type="submit" value="Submit" />
+        </div>
+        <div>
+          {action === "fact-check" ? <p>I can only fact check using data up until October 2024.</p> : <p></p>}
         </div>
       </form>
 

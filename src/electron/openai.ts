@@ -34,10 +34,10 @@ export async function aiCall(link: string, calltype: string): Promise<{ output_t
     apiKey: process.env.OPENAI_KEY,
     });
     const response = await client.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-5",
         messages: [{
             role: "user",
-            content: inputtext,
+            content: "what info are you most recently caught up on?",
         }],
     });
 
@@ -57,22 +57,22 @@ export async function apiImageCall(imageBase64: string): Promise<{ output_text: 
     });
 
     const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-5",
         messages: [
             {
                 role: "user",
                 content: [
-                    { type: "text", text: "give the link to the page" },
+                    { type: "text", text: "what is the link to the page showin, just give the full link, if you can't find the link just return no" },
                     {
                         type: "image_url",
-                        image_url: {
-                            url: `data:image/jpeg;base64,${imageBase64}`
+                        image_url: { 
+                            url: `data:image/jpeg;base64,${imageBase64}` 
                         },
                     },
                 ],
             },
         ],
-        max_tokens: 300,
+        max_completion_tokens: 1000,
     });
 
     console.log(response.choices[0].message.content);

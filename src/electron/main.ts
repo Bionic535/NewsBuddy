@@ -48,10 +48,29 @@ function registerGlobalShortcuts() {
     });
     globalShortcut.register('CommandOrControl+Shift+S', async () => {
         const result = await takeChromeScreenshot();
+        console.log("in summarize shortcut");   
         if (result && mainWindow) {
             mainWindow.show();
             mainWindow.focus();
-            aiImageCall(result.base64);
+            const response = await aiImageCall(result.base64);
+            console.log(response?.output_text);
+            if (response?.output_text) {
+                console.log(await apiCall(response.output_text, "summarize"));
+            }
+            mainWindow.webContents.send('screenshot-taken', result);
+        }
+    });
+    globalShortcut.register('CommandOrControl+Shift+C', async () => {
+        const result = await takeChromeScreenshot();
+        console.log("in fact-check shortcut");
+        if (result && mainWindow) {
+            mainWindow.show();
+            mainWindow.focus();
+            const response = await aiImageCall(result.base64);
+            console.log(response?.output_text);
+            if (response?.output_text) {
+                console.log(await apiCall(response.output_text, "fact-check"));
+            }
             mainWindow.webContents.send('screenshot-taken', result);
         }
     });
