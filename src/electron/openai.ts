@@ -37,7 +37,7 @@ export async function aiCall(link: string, calltype: string): Promise<{ output_t
         model: "gpt-5",
         messages: [{
             role: "user",
-            content: "what info are you most recently caught up on?",
+            content: inputtext,
         }],
     });
 
