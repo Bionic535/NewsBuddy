@@ -20,7 +20,6 @@ export async function getMainTextFromHtml(html: string): Promise<string> {
 
 export async function aiCall(link: string, calltype: string): Promise<{ output_text: string } | undefined> {
     const html = await fetch(link).then((res: Response) => res.text());
-    console.log(html);
     const mainText = await getMainTextFromHtml(html);
     let inputtext = "";
     if (calltype === "summarize") {
@@ -29,7 +28,6 @@ export async function aiCall(link: string, calltype: string): Promise<{ output_t
         inputtext = "please fact check this article:" + mainText + "if the article is too current, respond with your best guess on if it is fake from how it is written, if you are able to fact check it, correct any mistakes you find, and return the full corrected article.";
     }
 
-    console.log(link)
     const client = new OpenAI({
     apiKey: process.env.OPENAI_KEY,
     });
@@ -62,11 +60,11 @@ export async function apiImageCall(imageBase64: string): Promise<{ output_text: 
             {
                 role: "user",
                 content: [
-                    { type: "text", text: "what is the link to the page showin, just give the full link, if you can't find the link just return no" },
+                    { type: "text", text: "what is the link to the page showing, just give the full link, if you can't find the link just return no" },
                     {
                         type: "image_url",
-                        image_url: { 
-                            url: `data:image/jpeg;base64,${imageBase64}` 
+                        image_url: {
+                            url: `data:image/jpeg;base64,${imageBase64}`
                         },
                     },
                 ],

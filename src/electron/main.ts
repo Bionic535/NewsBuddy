@@ -9,6 +9,9 @@ import * as fs from "fs";
 import OpenAI from "openai";
 import client from "openai";
 let mainWindow: BrowserWindow;
+let summary: { output_text: string; } | undefined;
+let factcheck: { output_text: string; } | undefined;
+
 app.on("ready", () => {
         mainWindow = new BrowserWindow({
         webPreferences: {
@@ -55,9 +58,11 @@ function registerGlobalShortcuts() {
             const response = await aiImageCall(result.base64);
             console.log(response?.output_text);
             if (response?.output_text) {
-                console.log(await apiCall(response.output_text, "summarize"));
+                summary = await apiCall(response.output_text, "summarize");
             }
-            mainWindow.webContents.send('screenshot-taken', result);
+            if (summary) {
+                mainWindow.webContents.send('screenshot-taken', summary.output_text);
+            }
         }
     });
     globalShortcut.register('CommandOrControl+Shift+C', async () => {
@@ -69,9 +74,11 @@ function registerGlobalShortcuts() {
             const response = await aiImageCall(result.base64);
             console.log(response?.output_text);
             if (response?.output_text) {
-                console.log(await apiCall(response.output_text, "fact-check"));
+                factcheck = await apiCall(response.output_text, "fact-check");
             }
-            mainWindow.webContents.send('screenshot-taken', result);
+            if (factcheck) {
+                mainWindow.webContents.send('screenshot-taken', factcheck.output_text);
+            }
         }
     });
     if (isDev()) {

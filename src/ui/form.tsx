@@ -64,6 +64,7 @@ function MyForm() {
           {action === "fact-check" ? <p>I can only fact check using data up until October 2024.</p> : <p></p>}
         </div>
       </form>
+      <p>Press Ctrl/Cmd + shift + s to summarize an article you have open or Ctrl/Cmd + shift + c to fact check it</p>
 
       
     </>
