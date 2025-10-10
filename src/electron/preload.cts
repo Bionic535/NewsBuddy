@@ -1,6 +1,6 @@
 import { IpcRendererEvent } from "electron";
 
-const { contextBridge, ipcRenderer, desktopCapturer } = require('electron');
+const { contextBridge, ipcRenderer} = require('electron');
 
 function ipcInvoke<Key extends keyof EventPayloadMapping>(
     key: Key,

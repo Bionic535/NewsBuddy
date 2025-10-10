@@ -25,9 +25,9 @@ export async function aiCall(link: string, calltype: string): Promise<{ output_t
     if (calltype === "summarize") {
         inputtext = "please summarize the following article: " + mainText + "return just the summary.";
     } else if (calltype === "fact-check") {
-        inputtext = "please fact check this article:" + mainText + "if the article is too current, respond with your best guess on if it is fake from how it is written, if you are able to fact check it, correct any mistakes you find, and return the full corrected article.";
+        inputtext = "please fact check this article:" + mainText + "if the article is too current, respond with your best guess on if it is fake from how it is written, if you are able to fact check it, correct any mistakes you find.";
     }
-
+    console.log(inputtext)
     const client = new OpenAI({
     apiKey: process.env.OPENAI_KEY,
     });

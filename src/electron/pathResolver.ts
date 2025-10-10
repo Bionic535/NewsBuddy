@@ -12,3 +12,9 @@ export function getUiPath() {
         app.getAppPath(), '/dist-react/index.html'
     );
 }
+
+export function getIconPath() {
+    return path.join(
+        app.getAppPath(), '/src/ui/assets/logo.png'
+    );
+}

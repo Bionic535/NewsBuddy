@@ -1,7 +1,7 @@
-import { app, BrowserWindow, desktopCapturer, globalShortcut, screen } from "electron";  
+import { app, BrowserWindow, desktopCapturer, globalShortcut, screen, Tray } from "electron";  
 import * as path from "path";
 import { ipcMainHandle, isDev } from "./util.js";
-import { getPreloadPath } from "./pathResolver.js";
+import { getIconPath, getPreloadPath } from "./pathResolver.js";
 import { aiCall, apiImageCall } from "./openai.js";
 import { kMaxLength } from "buffer";
 import { glob } from "fs";
@@ -37,6 +37,7 @@ app.on("ready", () => {
         app.quit();
     });
 
+    new Tray(getIconPath());
 });
 
 function registerGlobalShortcuts() {

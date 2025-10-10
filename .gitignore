@@ -27,3 +27,4 @@ dist-electron
 
 # Environment variables
 .env
+training_data.jsonl
