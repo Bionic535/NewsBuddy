@@ -1,4 +1,4 @@
-import { app, BrowserWindow, desktopCapturer, globalShortcut, screen, Tray } from "electron";  
+import { app, BrowserWindow, desktopCapturer, globalShortcut, Menu, screen, Tray } from "electron";  
 import * as path from "path";
 import { ipcMainHandle, isDev } from "./util.js";
 import { getIconPath, getPreloadPath } from "./pathResolver.js";
@@ -37,9 +37,51 @@ app.on("ready", () => {
         app.quit();
     });
 
-    new Tray(getIconPath());
+    const tray = new Tray(getIconPath());
+    const trayMenu = Menu.buildFromTemplate([
+        { label: 'Show', click: () => { 
+            if (mainWindow) {
+                mainWindow.show(); 
+                mainWindow.restore?.();
+                mainWindow.focus();
+                if (app.dock) app.dock.show();
+            }
+        } },
+        { label: 'Quit', click: () => {app.quit(); } }
+    ]);
+    tray.setToolTip('NewsBuddy');
+    tray.setContextMenu(trayMenu);
+    tray.on('click', () => {
+        if (mainWindow) {
+            mainWindow.show();
+            mainWindow.restore?.();
+            mainWindow.focus();
+            if (app.dock) app.dock.show();
+        }
+    });
+    handleCloseEvents(mainWindow);
 });
 
+function handleCloseEvents(mainWindow: BrowserWindow) {
+    let willClose = false;
+    mainWindow.on('close', (e) => {
+        if (willClose) {
+            return;
+        }
+        e.preventDefault();
+        mainWindow.hide();
+        if (app.dock) {
+            app.dock.hide();
+        }
+    });
+
+    app.on('before-quit', () => {
+        willClose = true;
+    });
+    mainWindow.on('show', () => {
+        willClose = false;
+    });
+}
 function registerGlobalShortcuts() {
     const showHideKey = process.platform === "darwin" ? "Command+Shift+H" : "Control+Shift+H";
     globalShortcut.register(showHideKey, () => {
