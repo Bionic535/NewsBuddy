@@ -11,17 +11,23 @@ function App() {
   const navigate = useNavigate();
   [navigate]
   useEffect(() => {
-    const removeListener = window.electronAPI.onScreenshotTaken((result: any) => {
+    const removeSummaryListener = window.electronAPI.onScreenshotTakenSummary((result: any) => {
       console.log('Screenshot taken in renderer:', result);
       setResponse(result);
       navigate("/summary")
 
       // You can now update your React state with this result
     });
-
+    // Listen for fact-check screenshots
+    const removeFactCheckListener = window.electronAPI.onScreenshotTakenFactCheck((result: any) => {
+      console.log('Fact-check Screenshot taken in renderer:', result);
+      setResponse(result);
+      navigate("/factcheck")
+    });
     // Cleanup on component unmount
     return () => {
-      removeListener();
+      removeSummaryListener();
+      removeFactCheckListener();
     };
   }, []); // Empty array ensures this runs only once
 

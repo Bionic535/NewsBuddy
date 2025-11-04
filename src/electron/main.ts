@@ -96,15 +96,15 @@ function registerGlobalShortcuts() {
         const result = await takeChromeScreenshot();
         console.log("in summarize shortcut");   
         if (result && mainWindow) {
-            mainWindow.show();
-            mainWindow.focus();
             const response = await aiImageCall(result.base64);
             console.log(response?.output_text);
             if (response?.output_text) {
                 summary = await apiCall(response.output_text, "summarize");
             }
             if (summary) {
-                mainWindow.webContents.send('screenshot-taken', summary.output_text);
+                mainWindow.show();
+                mainWindow.focus();
+                mainWindow.webContents.send('screenshot-taken-summary', summary.output_text);
             }
         }
     });
@@ -112,15 +112,15 @@ function registerGlobalShortcuts() {
         const result = await takeChromeScreenshot();
         console.log("in fact-check shortcut");
         if (result && mainWindow) {
-            mainWindow.show();
-            mainWindow.focus();
             const response = await aiImageCall(result.base64);
             console.log(response?.output_text);
             if (response?.output_text) {
                 factcheck = await apiCall(response.output_text, "fact-check");
             }
             if (factcheck) {
-                mainWindow.webContents.send('screenshot-taken', factcheck.output_text);
+                mainWindow.show();
+                mainWindow.focus();
+                mainWindow.webContents.send('screenshot-taken-fact-check', factcheck.output_text);
             }
         }
     });
