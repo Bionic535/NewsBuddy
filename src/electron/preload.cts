@@ -1,13 +1,5 @@
-import { IpcRendererEvent } from "electron";
-
+import type { IpcRendererEvent } from "electron";
 const { contextBridge, ipcRenderer} = require('electron');
-
-function ipcInvoke<Key extends keyof EventPayloadMapping>(
-    key: Key,
-    ...args: any[]
-): Promise<EventPayloadMapping[Key]> {
-    return ipcRenderer.invoke(key, ...args);
-}
 
 contextBridge.exposeInMainWorld('electronAPI', {
   aiCall: (link: string, calltype: string) => ipcRenderer.invoke('aiCall', link, calltype)

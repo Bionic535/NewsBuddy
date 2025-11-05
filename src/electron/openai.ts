@@ -3,7 +3,6 @@ import OpenAI from "openai";
 import fetch from "node-fetch";
 import type { Response } from "node-fetch";
 import { load } from "cheerio";
-import fs from "fs";
 
 export async function getMainTextFromHtml(html: string): Promise<string> {
     const $ = load(html);

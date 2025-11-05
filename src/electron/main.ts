@@ -1,30 +1,52 @@
 import { app, BrowserWindow, desktopCapturer, globalShortcut, Menu, screen, Tray } from "electron";  
 import * as path from "path";
+import { fileURLToPath } from "url";
 import { ipcMainHandle, isDev } from "./util.js";
 import { getIconPath, getPreloadPath } from "./pathResolver.js";
 import { aiCall, apiImageCall } from "./openai.js";
-import { kMaxLength } from "buffer";
-import { glob } from "fs";
 import * as fs from "fs";
-import OpenAI from "openai";
-import client from "openai";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 let mainWindow: BrowserWindow;
 let summary: { output_text: string; } | undefined;
 let factcheck: { output_text: string; } | undefined;
 
 app.on("ready", () => {
-        mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         webPreferences: {
             preload: getPreloadPath(),
             contextIsolation: true,
             nodeIntegration: false,
         },
     });
+
+    // Add CSP headers with development-friendly settings
+    mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+        callback({
+            responseHeaders: {
+                ...details.responseHeaders,
+                'Content-Security-Policy': [
+                    "default-src 'self' ",
+                    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+                    "style-src 'self' 'unsafe-inline'",
+                    "img-src 'self' data: https:",
+                    "connect-src 'self' https://api.openai.com ws://localhost:5173",
+                    "worker-src 'self' blob:",
+                    isDev() ? "script-src-elem 'self' 'unsafe-inline'" : ""
+                ].filter(Boolean).join('; ')
+            }
+        });
+    });
+
     if (isDev()) {
         mainWindow.loadURL("http://localhost:5123");
         mainWindow.webContents.openDevTools();
     } else {
-        mainWindow.loadFile(path.join(app.getAppPath() + "/dist-react/index.html"));
+        // Use loadFile with the correct path
+        const indexPath = path.join(__dirname, "..", "dist-react", "index.html");
+        mainWindow.loadFile(indexPath);
     }
     ipcMainHandle('aiCall', async (link: string, calltype: string) => {
         return await apiCall(link, calltype);
