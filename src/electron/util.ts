@@ -1,6 +1,4 @@
 import { ipcMain, type WebContents, type WebFrameMain } from "electron";
-import { pathToFileURL } from "url";
-import { getUiPath } from "./pathResolver.js";
 
 
 export function isDev(): boolean {
@@ -29,15 +27,18 @@ export function ipcWebContentsSend<Key extends keyof EventPayloadMapping>(
 }
 
 export function validateEventFrame(frame: WebFrameMain) {
-    console.log(`Validating frame URL: ${frame.url}`);
+    const url = (frame && (frame.url || (frame as any).url)) ?? '';
     if (isDev()) {
-        if (new URL(frame.url).host === 'localhost:5123') {
+        // accept dev server (common Vite ports)
+        if (url.startsWith('http://localhost:5123') || url.startsWith('http://localhost:5173')) {
             return;
         }
     } else {
-        if (frame.url === pathToFileURL(getUiPath()).toString()) {
+        // packaged app: accept any file:// URL that points to your built UI index
+        // this covers paths like file:///C:/.../resources/app.asar/dist-react/index.html[#...]
+        if (url.startsWith('file://') && url.includes('/dist-react/index.html')) {
             return;
         }
     }
-    throw new Error(`Invalid frame URL: ${frame.url}`);
+    throw new Error(`Invalid frame URL: ${url}`);
 }

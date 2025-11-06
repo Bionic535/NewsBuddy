@@ -13,14 +13,24 @@ let mainWindow: BrowserWindow;
 let summary: { output_text: string; } | undefined;
 let factcheck: { output_text: string; } | undefined;
 
+ipcMainHandle('aiCall', async (link: string, calltype: string) => {
+    return await apiCall(link, calltype);
+});
+
+ipcMainHandle('apiImageCall', async (imageBase64: string) => {
+    return await apiImageCall(imageBase64);
+});
+
 app.on("ready", () => {
     mainWindow = new BrowserWindow({
+        autoHideMenuBar: true,
         webPreferences: {
             preload: getPreloadPath(),
             contextIsolation: true,
             nodeIntegration: false,
         },
     });
+    mainWindow.setMenu(null);
 
     // Add CSP headers with development-friendly settings
     mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
@@ -48,12 +58,6 @@ app.on("ready", () => {
         const indexPath = path.join(__dirname, "..", "dist-react", "index.html");
         mainWindow.loadFile(indexPath);
     }
-    ipcMainHandle('aiCall', async (link: string, calltype: string) => {
-        return await apiCall(link, calltype);
-    });
-    ipcMainHandle('apiImageCall', async (imageBase64: string) => {
-        return await apiImageCall(imageBase64);
-    });
     registerGlobalShortcuts();
     mainWindow.on("closed", () => {
         app.quit();
@@ -113,6 +117,11 @@ function registerGlobalShortcuts() {
             mainWindow.show();
         }
 
+    });
+    globalShortcut.register('CommandOrControl+Shift+I', () => {
+        if (mainWindow) {
+            mainWindow.webContents.toggleDevTools();
+        }
     });
     globalShortcut.register('CommandOrControl+Shift+S', async () => {
         const result = await takeChromeScreenshot();
