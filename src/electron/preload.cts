@@ -17,5 +17,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
       return () => {
         ipcRenderer.removeListener('screenshot-taken-fact-check', listener);
       };
-    }
+    },
+  onLog: (callback: (value: any) => void) => {
+    const listener = (_event: IpcRendererEvent, value: any) => callback(value);
+    ipcRenderer.on('log-message', listener);
+    return () => {
+      ipcRenderer.removeListener('log-message', listener);
+    };
+  }
 });

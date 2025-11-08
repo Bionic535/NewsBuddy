@@ -9,5 +9,6 @@ interface Window {
       apiImageCall: (imageBase64: string) => { output_text: string; } | Promise<{ output_text: string; } | undefined> | undefined;
       onScreenshotTakenSummary: (callback: (imageBase64: string) => void) => () => void;
       onScreenshotTakenFactCheck: (callback: (imageBase64: string) => void) => () => void;
+      onLog: (callback: (message: any) => void) => () => void;
     };
   }

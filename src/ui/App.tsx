@@ -23,15 +23,20 @@ function App() {
       navigate("/factcheck");
     });
 
+    const removeLogListener = window.electronAPI.onLog((message: any) => {
+      console.log('From main process:', message);
+    });
+
     return () => {
       removeSummaryListener();
       removeFactCheckListener();
+      removeLogListener();
     };
   }, [navigate, setResponse]);
 
   return (
     <>
-      <h1 className="text-4xl font-bold">NewsBuddy</h1>
+      <h1 className="text-4xl font-bold mb-4">NewsBuddy</h1>
       <Routes>
         <Route path="/" element={<MyForm />} />
         <Route path="/summary" element={<Summary />} />

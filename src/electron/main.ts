@@ -59,6 +59,7 @@ app.on("ready", () => {
         mainWindow.loadFile(indexPath);
     }
     registerGlobalShortcuts();
+    mainWindow.webContents.send('log-message', 'shortcuts registered');
     mainWindow.on("closed", () => {
         app.quit();
     });
