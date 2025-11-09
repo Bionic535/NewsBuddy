@@ -4,7 +4,6 @@ import { fileURLToPath } from "url";
 import { ipcMainHandle, isDev } from "./util.js";
 import { getIconPath, getPreloadPath } from "./pathResolver.js";
 import { aiCall, apiImageCall } from "./openai.js";
-import * as fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -131,11 +130,11 @@ function registerGlobalShortcuts() {
         console.log("in summarize shortcut");   
         if (result && mainWindow) {
             const response = await aiImageCall(result.base64);
-            mainWindow.webContents.send('log-message', 'ai image call completed');
+            mainWindow.webContents.send('log-message', `ai image call completed, ${response?.output_text}`);
             console.log(response?.output_text);
             if (response?.output_text) {
                 summary = await apiCall(response.output_text, "summarize");
-                mainWindow.webContents.send('log-message', 'summarization call complete');
+                mainWindow.webContents.send('log-message', `summarization call complete, ${summary?.output_text}`);
 
             }
             if (summary) {
