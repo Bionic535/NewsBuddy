@@ -119,19 +119,24 @@ function registerGlobalShortcuts() {
         }
 
     });
-    globalShortcut.register('CommandOrControl+Shift+I', () => {
+    globalShortcut.register('`', () => {
         if (mainWindow) {
             mainWindow.webContents.toggleDevTools();
         }
     });
     globalShortcut.register('CommandOrControl+Shift+S', async () => {
+        mainWindow.webContents.send('log-message', 'in summarize shortcut');
         const result = await takeChromeScreenshot();
+        mainWindow.webContents.send('log-message', 'screenshot captured');
         console.log("in summarize shortcut");   
         if (result && mainWindow) {
             const response = await aiImageCall(result.base64);
+            mainWindow.webContents.send('log-message', 'ai image call completed');
             console.log(response?.output_text);
             if (response?.output_text) {
                 summary = await apiCall(response.output_text, "summarize");
+                mainWindow.webContents.send('log-message', 'summarization call complete');
+
             }
             if (summary) {
                 mainWindow.show();
@@ -141,13 +146,17 @@ function registerGlobalShortcuts() {
         }
     });
     globalShortcut.register('CommandOrControl+Shift+C', async () => {
+        mainWindow.webContents.send('log-message', 'in fact-check shortcut');
         const result = await takeChromeScreenshot();
+        mainWindow.webContents.send('log-message', 'screenshot captured');
         console.log("in fact-check shortcut");
         if (result && mainWindow) {
             const response = await aiImageCall(result.base64);
+            mainWindow.webContents.send('log-message', 'ai image call completed');
             console.log(response?.output_text);
             if (response?.output_text) {
                 factcheck = await apiCall(response.output_text, "fact-check");
+                mainWindow.webContents.send('log-message', 'summarization call complete');
             }
             if (factcheck) {
                 mainWindow.show();
@@ -157,7 +166,7 @@ function registerGlobalShortcuts() {
         }
     });
     if (isDev()) {
-        globalShortcut.register('F12', () => {
+        globalShortcut.register('`', () => {
             if (mainWindow) {
                 mainWindow.webContents.toggleDevTools();
             }
@@ -206,19 +215,9 @@ async function takeChromeScreenshot() {
         // Convert to base64 for OpenAI API
         const base64Image = screenshotBuffer.toString('base64');
         
-        // Optional: Also save to disk for debugging/backup
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const screenshotPath = path.join(
-            app.getPath('desktop'), 
-            `chrome-tab-${timestamp}.png`
-        );
-        fs.writeFileSync(screenshotPath, screenshotBuffer);
-        
-        console.log(`Chrome tab screenshot saved to: ${screenshotPath}`);
         
         return {
             success: true,
-            path: screenshotPath,
             windowName: targetWindow.name,
             timestamp: new Date().toISOString(),
             // These are what you need for OpenAI:
