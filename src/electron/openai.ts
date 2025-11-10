@@ -1,20 +1,26 @@
-import { app } from 'electron';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import OpenAI from "openai";
 import fetch from "node-fetch";
 import type { Response } from "node-fetch";
 import { load } from "cheerio";
+import dotenv from "dotenv";
+import path from "path";
+import { app } from "electron";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const envPath = app.isPackaged
-  ? path.join(process.resourcesPath, '.env')
-  : path.resolve(__dirname, '../../.env');
-
+// load .env (development or packaged)
+const envPath = app && app.isPackaged
+  ? path.join(process.resourcesPath || process.cwd(), ".env")
+  : path.resolve(process.cwd(), ".env");
 dotenv.config({ path: envPath });
+
+// get key and helper
+const OPENAI_KEY = process.env.OPENAI_API_KEY ?? process.env.OPENAI_KEY;
+if (!OPENAI_KEY || OPENAI_KEY.trim() === "") {
+  throw new Error("OpenAI API key not found. Set OPENAI_API_KEY or OPENAI_KEY in environment or include a .env in extraResources.");
+}
+function getOpenAIClient() {
+  return new OpenAI({ apiKey: OPENAI_KEY });
+}
+
 export async function getMainTextFromHtml(html: string): Promise<string> {
     const $ = load(html);
     // Try to select <main>, <article>, or fallback to <body>
@@ -38,9 +44,7 @@ export async function aiCall(link: string, calltype: string): Promise<{ output_t
         inputtext = "please fact check this article:" + mainText + "if the article is too current, respond with your best guess on if it is fake from how it is written, if you are able to fact check it, correct any mistakes you find.";
     }
     console.log(inputtext)
-    const client = new OpenAI({
-    apiKey: process.env.OPENAI_KEY,
-    });
+    const client = getOpenAIClient();
     const response = await client.chat.completions.create({
         model: "gpt-5",
         messages: [{
@@ -60,12 +64,10 @@ export async function aiCall(link: string, calltype: string): Promise<{ output_t
 
 export async function apiImageCall(imageBase64: string): Promise<{ output_text: string } | undefined> {
     console.log("inside apiImageCall");
-    const openai = new OpenAI({
-    apiKey: process.env.OPENAI_KEY,
-    });
+    const openai = getOpenAIClient();
 
     const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "gpt-4o",
         messages: [
             {
                 role: "user",
@@ -80,7 +82,6 @@ export async function apiImageCall(imageBase64: string): Promise<{ output_text: 
                 ],
             },
         ],
-        max_completion_tokens: 1000,
     });
 
     console.log(response.choices[0].message.content);
