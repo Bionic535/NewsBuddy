@@ -5,11 +5,21 @@ import { load } from "cheerio";
 import dotenv from "dotenv";
 import path from "path";
 import { app } from "electron";
+import fs from "fs";
 
 // load .env (development or packaged)
-const envPath = app && app.isPackaged
-  ? path.join(process.resourcesPath || process.cwd(), ".env")
-  : path.resolve(process.cwd(), ".env");
+const devEnv = path.resolve(process.cwd(), ".env");
+const packagedCandidates = [
+  path.join(process.resourcesPath || process.cwd(), ".env"),
+  // some packagers may place extra resources in resources/app
+  path.join(process.resourcesPath || process.cwd(), "app", ".env"),
+];
+let envPath = devEnv;
+if (app && app.isPackaged) {
+  const found = packagedCandidates.find(p => fs.existsSync(p));
+  envPath = found ?? packagedCandidates[0];
+}
+console.log("Loading .env from:", envPath, "exists:", fs.existsSync(envPath));
 dotenv.config({ path: envPath });
 
 // get key and helper

@@ -49,6 +49,12 @@
   },
   "build": {
     "productName": "NewsBuddy",
+    "extraResources": [
+      {
+        "from": "./.env",
+        "to": ".env"
+      }
+    ],
     "win": {
       "icon": "build/icon.ico"
     }
