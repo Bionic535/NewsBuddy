@@ -49,9 +49,19 @@ export async function aiCall(link: string, calltype: string): Promise<{ output_t
     const mainText = await getMainTextFromHtml(html);
     let inputtext = "";
     if (calltype === "summarize") {
-        inputtext = "please summarize the following article: " + mainText + "return just the summary.";
+        inputtext = `
+        please summarize the following article: ${mainText}.
+        please keep the length of the summary to around 200 words, if necessary you can go up to 400 words.
+        please return just the given summary without any additional commentary.
+        `;
     } else if (calltype === "fact-check") {
-        inputtext = "please fact check this article:" + mainText + "if the article is too current, respond with your best guess on if it is fake from how it is written, if you are able to fact check it, correct any mistakes you find.";
+        inputtext = `
+        please fact check this article: ${mainText} if the article is too current, respond with your best guess on if it is fake from how it is written, if you are able to fact check it, correct any mistakes you find.
+        keep the response to under 300 words.
+        please return just the fact-checked article without any additional commentary.
+        if there are no factual inaccuracies, respond with "No inaccuracies found.".
+        Only correct things you know 100% to be false, do not discuss things you are unsure about.
+        `;
     }
     console.log(inputtext)
     const client = getOpenAIClient();
@@ -77,7 +87,7 @@ export async function apiImageCall(imageBase64: string): Promise<{ output_text: 
     const openai = getOpenAIClient();
 
     const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-5",
         messages: [
             {
                 role: "user",
