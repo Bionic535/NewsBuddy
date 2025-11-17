@@ -7,9 +7,8 @@ function FactCheck() {
   return (
     <>
       <h2 className="text-2xl font-bold">Fact-Check</h2>
-      <p>Warning articles based on recent information may not be </p>
-      <p>{response}</p>
-      <button onClick={() => navigate("/")}>Go Back</button>
+      <p className="border-2 rounded-md m-3 p-2">{response}</p>
+      <button onClick={() => navigate("/")} className="border rounded-md">Go Back</button>
     </>
   )
 }
