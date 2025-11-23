@@ -1,19 +1,19 @@
-* NewsBuddy
+# NewsBuddy
 
 This program allows you to fact check or summarize any articles using openai's api
 
 
-** Use Instructions
+## Use Instructions
 
 Before doing anything click on Set Api Key at the top then put your api key in the feild given then click save
 
 Click on Home to go back to the home page
 
-*** Form:
+### Form:
 Enter the link into the given feild then in the drop down menu next to the text "Summarize or Fact-Check" click summarize to summarize the article or fact-check to fact check it. Then click on submit
 
 
-*** Keyboard Commands 
+### Keyboard Commands 
 Press Ctrl/Command+Shift+c to fact check an article you have open
 
 Press Ctrl/Command+Shift+s to summarize an article you have open
