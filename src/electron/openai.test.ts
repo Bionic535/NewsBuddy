@@ -1,5 +1,5 @@
-import { test, expect, beforeEach } from 'vitest';
-import { getMainTextFromHtml, aiCall ,apiImageCall } from './openai.js';
+import { test, expect } from 'vitest';
+import { getMainTextFromHtml } from './openai.js';
 
 
 test('getMainTextFromHtml extracts text from <main>', async () => {

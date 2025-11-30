@@ -23,12 +23,12 @@ console.log("Loading .env from:", envPath, "exists:", fs.existsSync(envPath));
 dotenv.config({ path: envPath });
 
 // get key and helper
-const OPENAI_KEY = process.env.OPENAI_API_KEY ?? process.env.OPENAI_KEY;
-if (!OPENAI_KEY || OPENAI_KEY.trim() === "") {
-  throw new Error("OpenAI API key not found. Set OPENAI_API_KEY or OPENAI_KEY in environment or include a .env in extraResources.");
-}
-function getOpenAIClient() {
-  return new OpenAI({ apiKey: OPENAI_KEY });
+function getOpenAIClient(apiKey?: string) {
+  const key = apiKey || process.env.OPENAI_API_KEY || process.env.OPENAI_KEY;
+  if (!key || key.trim() === "") {
+    throw new Error("OpenAI API key not found. Please set it in the settings or configure OPENAI_API_KEY in your environment.");
+  }
+  return new OpenAI({ apiKey: key });
 }
 
 export async function getMainTextFromHtml(html: string): Promise<string> {
@@ -44,7 +44,7 @@ export async function getMainTextFromHtml(html: string): Promise<string> {
     return mainText;
 }
 
-export async function aiCall(link: string, calltype: string): Promise<{ output_text: string } | undefined> {
+export async function aiCall(link: string, calltype: string, apiKey?: string): Promise<{ output_text: string } | undefined> {
     const html = await fetch(link).then((res: Response) => res.text());
     const mainText = await getMainTextFromHtml(html);
     let inputtext = "";
@@ -64,7 +64,7 @@ export async function aiCall(link: string, calltype: string): Promise<{ output_t
         `;
     }
     console.log(inputtext)
-    const client = getOpenAIClient();
+    const client = getOpenAIClient(apiKey);
     const response = await client.chat.completions.create({
         model: "gpt-5",
         messages: [{
@@ -82,9 +82,9 @@ export async function aiCall(link: string, calltype: string): Promise<{ output_t
     return undefined;
 }
 
-export async function apiImageCall(imageBase64: string): Promise<{ output_text: string } | undefined> {
+export async function apiImageCall(imageBase64: string, apiKey?: string): Promise<{ output_text: string } | undefined> {
     console.log("inside apiImageCall");
-    const openai = getOpenAIClient();
+    const openai = getOpenAIClient(apiKey);
 
     const response = await openai.chat.completions.create({
         model: "gpt-5",

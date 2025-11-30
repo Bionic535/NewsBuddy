@@ -1,8 +1,9 @@
 {
+    "productName": "NewsBuddy",
     "appId": "com.lachlan-bruce.myapp",
-    "files": ["dist-electron", "dist-react"],
-    "icon": "src/ui/assets/react.png",
-    "extraResources": ["dist-electron/preload.cjs", "src/ui/assets/react.png", ".env"],
+    "files": ["dist-electron", "dist-react", "src/ui/assets"],
+    "icon": "src/ui/assets/logo.png",
+    "extraResources": ["dist-electron/preload.cjs", "src/ui/assets/logo.png", ".env"],
     "mac": {
         "target": "dmg"
     },
@@ -11,6 +12,12 @@
         "category": "Utility"
     },
     "win": {
-        "target": ["portable", "msi"]
+        "target": "nsis"
+    },
+    "nsis": {
+        "deleteAppDataOnUninstall": true,
+        "perMachine": false,
+        "allowToChangeInstallationDirectory": true,
+        "oneClick": false
     }
 }

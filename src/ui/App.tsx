@@ -3,7 +3,8 @@ import './App.css'
 import MyForm from './form'
 import Summary from './summary'
 import FactCheck from './FactCheck';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Settings } from './Settings';
+import { Routes, Route, useNavigate, Link } from 'react-router-dom';
 import { useAiCallResponse } from './AiCallResponseContext';
 
 function App() {
@@ -36,11 +37,15 @@ function App() {
 
   return (
     <>
+      <nav>
+        <Link to="/">Home</Link> | <Link to="/settings">Set API Key</Link>
+      </nav>
       <h1 className="text-4xl font-bold mb-4">NewsBuddy</h1>
       <Routes>
         <Route path="/" element={<MyForm />} />
         <Route path="/summary" element={<Summary />} />
         <Route path="/factcheck" element={<FactCheck />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </>
   );

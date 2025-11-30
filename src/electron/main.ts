@@ -1,9 +1,18 @@
-import { app, BrowserWindow, desktopCapturer, globalShortcut, Menu, screen, Tray } from "electron";  
+import { app, BrowserWindow, desktopCapturer, globalShortcut, screen, ipcMain } from "electron";  
 import * as path from "path";
 import { fileURLToPath } from "url";
 import { ipcMainHandle, isDev } from "./util.js";
-import { getIconPath, getPreloadPath } from "./pathResolver.js";
+import { getPreloadPath } from "./pathResolver.js";
 import { aiCall, apiImageCall } from "./openai.js";
+import Store from "electron-store";
+
+if (!isDev()) {
+    app.setName('NewsBuddy');
+}
+
+
+let store = new Store({ name: app.getName() });
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,12 +21,22 @@ let mainWindow: BrowserWindow;
 let summary: { output_text: string; } | undefined;
 let factcheck: { output_text: string; } | undefined;
 
+ipcMain.on('setApiKey', (_, apiKey: string) => {
+    store.set('apiKey', apiKey);
+});
+
+ipcMainHandle('getApiKey', async () => {
+    return store.get('apiKey') as string;
+});
+
 ipcMainHandle('aiCall', async (link: string, calltype: string) => {
-    return await apiCall(link, calltype);
+    const apiKey = store.get('apiKey') as string;
+    return await apiCall(link, calltype, apiKey);
 });
 
 ipcMainHandle('apiImageCall', async (imageBase64: string) => {
-    return await apiImageCall(imageBase64);
+    const apiKey = store.get('apiKey') as string;
+    return await apiImageCall(imageBase64, apiKey);
 });
 
 app.on("ready", () => {
@@ -63,42 +82,16 @@ app.on("ready", () => {
         app.quit();
     });
 
-    const tray = new Tray(getIconPath());
-    const trayMenu = Menu.buildFromTemplate([
-        { label: 'Show', click: () => { 
-            if (mainWindow) {
-                mainWindow.show(); 
-                mainWindow.restore?.();
-                mainWindow.focus();
-                if (app.dock) app.dock.show();
-            }
-        } },
-        { label: 'Quit', click: () => {app.quit(); } }
-    ]);
-    tray.setToolTip('NewsBuddy');
-    tray.setContextMenu(trayMenu);
-    tray.on('click', () => {
-        if (mainWindow) {
-            mainWindow.show();
-            mainWindow.restore?.();
-            mainWindow.focus();
-            if (app.dock) app.dock.show();
-        }
+        // Existing `handleCloseEvents` function call
+        handleCloseEvents(mainWindow);
     });
-    handleCloseEvents(mainWindow);
-});
-
 function handleCloseEvents(mainWindow: BrowserWindow) {
     let willClose = false;
-    mainWindow.on('close', (e) => {
+    mainWindow.on('close', () => {
         if (willClose) {
             return;
         }
-        e.preventDefault();
-        mainWindow.hide();
-        if (app.dock) {
-            app.dock.hide();
-        }
+        // Allow the default close behavior (quitting the app)
     });
 
     app.on('before-quit', () => {
@@ -129,11 +122,12 @@ function registerGlobalShortcuts() {
         mainWindow.webContents.send('log-message', 'screenshot captured');
         console.log("in summarize shortcut");   
         if (result && mainWindow) {
-            const response = await aiImageCall(result.base64);
+            const apiKey = store.get('apiKey') as string;
+            const response = await aiImageCall(result.base64, apiKey);
             mainWindow.webContents.send('log-message', `ai image call completed, ${response?.output_text}`);
             console.log(response?.output_text);
             if (response?.output_text) {
-                summary = await apiCall(response.output_text, "summarize");
+                summary = await apiCall(response.output_text, "summarize", apiKey);
                 mainWindow.webContents.send('log-message', `summarization call complete, ${summary?.output_text}`);
 
             }
@@ -150,11 +144,12 @@ function registerGlobalShortcuts() {
         mainWindow.webContents.send('log-message', 'screenshot captured');
         console.log("in fact-check shortcut");
         if (result && mainWindow) {
-            const response = await aiImageCall(result.base64);
+            const apiKey = store.get('apiKey') as string;
+            const response = await aiImageCall(result.base64, apiKey);
             mainWindow.webContents.send('log-message', 'ai image call completed');
             console.log(response?.output_text);
             if (response?.output_text) {
-                factcheck = await apiCall(response.output_text, "fact-check");
+                factcheck = await apiCall(response.output_text, "fact-check", apiKey);
                 mainWindow.webContents.send('log-message', 'summarization call complete');
             }
             if (factcheck) {
@@ -178,10 +173,7 @@ app.on('will-quit', () => {
     globalShortcut.unregisterAll();
 });
 
-app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-    }
-});
+
 
 async function takeChromeScreenshot() {
     try {
@@ -229,9 +221,9 @@ async function takeChromeScreenshot() {
         
     }
 } 
-async function apiCall(link: string, calltype: string): Promise<{ output_text: string } | undefined> {
+async function apiCall(link: string, calltype: string, apiKey?: string): Promise<{ output_text: string } | undefined> {
     try {
-        const response = await aiCall(link, calltype);
+        const response = await aiCall(link, calltype, apiKey);
         console.log("AI Call Response:", response);
         return response;
     } catch (error) {
@@ -239,10 +231,10 @@ async function apiCall(link: string, calltype: string): Promise<{ output_text: s
     }
 }
 
-async function aiImageCall(imageBase64: string): Promise<{ output_text: string } | undefined> {
+async function aiImageCall(imageBase64: string, apiKey?: string): Promise<{ output_text: string } | undefined> {
     console.log("Received image for processing.");
     try {
-        const response = await apiImageCall(imageBase64);
+        const response = await apiImageCall(imageBase64, apiKey);
         console.log("API Image Call Response:", response);
         return response;
     } catch (error) {

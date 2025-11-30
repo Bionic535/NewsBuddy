@@ -2,9 +2,11 @@ import type { IpcRendererEvent } from "electron";
 const { contextBridge, ipcRenderer} = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  aiCall: (link: string, calltype: string) => ipcRenderer.invoke('aiCall', link, calltype)
-  , apiImageCall: (imageBase64: string) => ipcRenderer.invoke('apiImageCall', imageBase64)
-  , onScreenshotTakenSummary: (callback: (value: any) => void) => {
+  aiCall: (link: string, calltype: string) => ipcRenderer.invoke('aiCall', link, calltype),
+  apiImageCall: (imageBase64: string) => ipcRenderer.invoke('apiImageCall', imageBase64),
+  setApiKey: (apiKey: string) => ipcRenderer.send('setApiKey', apiKey),
+  getApiKey: () => ipcRenderer.invoke('getApiKey'),
+  onScreenshotTakenSummary: (callback: (value: any) => void) => {
       const listener = (_event: IpcRendererEvent, value: any) => callback(value);
       ipcRenderer.on('screenshot-taken-summary', listener);
       return () => {
