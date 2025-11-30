@@ -3,6 +3,10 @@
 This program allows you to fact check or summarize any articles using openai's api
 
 
+## Install
+Find the and run the setup.exe found within the dist folder
+
+
 ## Use Instructions
 
 Before doing anything click on Set Api Key at the top then put your api key in the feild given then click save
@@ -19,3 +23,8 @@ Press Ctrl/Command+Shift+c to fact check an article you have open
 Press Ctrl/Command+Shift+s to summarize an article you have open
 
 In order for the app to pick up the article you wish to be summarized please click on the open tab before running the shortcut, This works 100% with chrome and chromium based browsers.
+
+
+## Uninstall
+
+When uninstalling please delete the NewsBuddy folder in AppData/Roaming, this is used to store your api key locally, I am working to allow the program to delete that folder when uninstalled

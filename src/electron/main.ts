@@ -2,7 +2,7 @@ import { app, BrowserWindow, desktopCapturer, globalShortcut, screen, ipcMain } 
 import * as path from "path";
 import { fileURLToPath } from "url";
 import { ipcMainHandle, isDev } from "./util.js";
-import { getPreloadPath } from "./pathResolver.js";
+import { getPreloadPath, getIconPath } from "./pathResolver.js";
 import { aiCall, apiImageCall } from "./openai.js";
 import Store from "electron-store";
 
@@ -41,6 +41,7 @@ ipcMainHandle('apiImageCall', async (imageBase64: string) => {
 
 app.on("ready", () => {
     mainWindow = new BrowserWindow({
+        icon: getIconPath(),
         autoHideMenuBar: true,
         webPreferences: {
             preload: getPreloadPath(),
