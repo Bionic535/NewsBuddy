@@ -1,9 +1,8 @@
 {
   "name": "my-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A desktop app built with Electron, React, and Vite.",
-  "author": "Your Name <your@email.com>",
   "type": "module",
   "main": "dist-electron/main.js",
   "scripts": {

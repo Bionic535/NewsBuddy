@@ -2,8 +2,8 @@
     "productName": "NewsBuddy",
     "appId": "com.lachlan-bruce.myapp",
     "files": ["dist-electron", "dist-react", "src/ui/assets"],
-    "icon": "src/ui/assets/logo.png",
-    "extraResources": ["dist-electron/preload.cjs", "src/ui/assets/logo.png", ".env"],
+    "icon": "src/ui/assets/logo.ico",
+    "extraResources": ["dist-electron/preload.cjs", ".env"],
     "mac": {
         "target": "dmg"
     },

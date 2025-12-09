@@ -41,7 +41,7 @@ ipcMainHandle('apiImageCall', async (imageBase64: string) => {
 
 app.on("ready", () => {
     mainWindow = new BrowserWindow({
-        icon: getIconPath(),
+        icon: path.join(__dirname, 'assets/icon.ico'),
         autoHideMenuBar: true,
         webPreferences: {
             preload: getPreloadPath(),

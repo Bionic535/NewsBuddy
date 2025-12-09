@@ -14,6 +14,6 @@ export function getUiPath() {
 
 export function getIconPath() {
     return path.join(
-        app.getAppPath(), '/src/ui/assets/logo.png'
+        app.getAppPath(), '/src/ui/assets/icon.ico'
     );
 }
