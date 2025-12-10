@@ -1,4 +1,4 @@
-import { app, BrowserWindow, desktopCapturer, globalShortcut, screen, ipcMain } from "electron";  
+import { app, BrowserWindow, desktopCapturer, globalShortcut, screen, ipcMain } from "electron";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import { ipcMainHandle, isDev } from "./util.js";
@@ -41,7 +41,7 @@ ipcMainHandle('apiImageCall', async (imageBase64: string) => {
 
 app.on("ready", () => {
     mainWindow = new BrowserWindow({
-        icon: path.join(__dirname, 'assets/icon.ico'),
+        icon: getIconPath(),
         autoHideMenuBar: true,
         webPreferences: {
             preload: getPreloadPath(),
@@ -83,9 +83,9 @@ app.on("ready", () => {
         app.quit();
     });
 
-        // Existing `handleCloseEvents` function call
-        handleCloseEvents(mainWindow);
-    });
+    // Existing `handleCloseEvents` function call
+    handleCloseEvents(mainWindow);
+});
 function handleCloseEvents(mainWindow: BrowserWindow) {
     let willClose = false;
     mainWindow.on('close', () => {
@@ -121,7 +121,7 @@ function registerGlobalShortcuts() {
         mainWindow.webContents.send('log-message', 'in summarize shortcut');
         const result = await takeChromeScreenshot();
         mainWindow.webContents.send('log-message', 'screenshot captured');
-        console.log("in summarize shortcut");   
+        console.log("in summarize shortcut");
         if (result && mainWindow) {
             const apiKey = store.get('apiKey') as string;
             const response = await aiImageCall(result.base64, apiKey);
@@ -180,17 +180,17 @@ async function takeChromeScreenshot() {
     try {
         const { width, height } = screen.getPrimaryDisplay().workAreaSize;
         const thumbnailSize = { width, height };
-        const sources = await desktopCapturer.getSources({ 
+        const sources = await desktopCapturer.getSources({
             types: ['window'],
-            thumbnailSize 
+            thumbnailSize
         });
         const chromeWindows = sources.filter(source => {
             const name = source.name.toLowerCase();
             return name.includes('chrome') ||
-                   name.includes('google chrome') ||
-                   name.includes('chromium') ||
-                   name.includes('microsoft edge') ||
-                   name.includes('brave');
+                name.includes('google chrome') ||
+                name.includes('chromium') ||
+                name.includes('microsoft edge') ||
+                name.includes('brave');
         });
         if (chromeWindows.length == 0) {
             console.error("No Chrome windows found.");
@@ -200,14 +200,14 @@ async function takeChromeScreenshot() {
         console.log(`Found ${chromeWindows.length} Chrome windows.`);
         // Use the first Chrome window
         const targetWindow = chromeWindows[0];
-        
+
         // Get screenshot as PNG buffer (raw bytes)
         const screenshotBuffer = targetWindow.thumbnail.toPNG();
-        
+
         // Convert to base64 for OpenAI API
         const base64Image = screenshotBuffer.toString('base64');
-        
-        
+
+
         return {
             success: true,
             windowName: targetWindow.name,
@@ -219,9 +219,9 @@ async function takeChromeScreenshot() {
         };
     } catch (error) {
         console.error("Error capturing screen:", error);
-        
+
     }
-} 
+}
 async function apiCall(link: string, calltype: string, apiKey?: string): Promise<{ output_text: string } | undefined> {
     try {
         const response = await aiCall(link, calltype, apiKey);
@@ -239,6 +239,6 @@ async function aiImageCall(imageBase64: string, apiKey?: string): Promise<{ outp
         console.log("API Image Call Response:", response);
         return response;
     } catch (error) {
-        console.error("Error during API image call:", error);   
+        console.error("Error during API image call:", error);
     }
 }

@@ -13,7 +13,10 @@ export function getUiPath() {
 }
 
 export function getIconPath() {
-    return path.join(
-        app.getAppPath(), '/src/ui/assets/icon.ico'
-    );
+    if (isDev()) {
+        return path.join(app.getAppPath(), 'src/electron/assets/icon.ico');
+    }
+    return path.join(app.getAppPath(), 'dist-electron/assets/icon.ico');
 }
+
+import { isDev } from "./util.js";
