@@ -24,6 +24,7 @@
         "deleteAppDataOnUninstall": true,
         "perMachine": false,
         "allowToChangeInstallationDirectory": true,
-        "oneClick": false
+        "oneClick": false,
+        "artifactName": "${productName} Setup.${ext}"
     }
 }
