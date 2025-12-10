@@ -25,6 +25,7 @@
         "perMachine": false,
         "allowToChangeInstallationDirectory": true,
         "oneClick": false,
-        "artifactName": "${productName} Setup.${ext}"
+        "artifactName": "${productName} Setup.${ext}",
+        "include": "scripts/installer.nsh"
     }
 }
